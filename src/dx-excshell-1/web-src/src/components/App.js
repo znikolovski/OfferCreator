@@ -9,7 +9,9 @@ import { HashRouter as Router, Switch, Route } from 'react-router-dom'
 import SideBar from './SideBar'
 import ActionsForm from './ActionsForm'
 import { Home } from './Home'
-import { About } from './About'
+import BannerCreator from './BannerCreator'
+import OfferCreator from './OfferCreator'
+import OfferList from './OfferList'
 
 function App (props) {
   console.log('runtime object:', props.runtime)
@@ -46,13 +48,16 @@ function App (props) {
             <View gridArea='content' padding='size-200'>
               <Switch>
                 <Route exact path='/'>
-                  <Home></Home>
+                  <OfferList runtime={props.runtime} ims={props.ims}></OfferList>
                 </Route>
                 <Route path='/actions'>
                   <ActionsForm runtime={props.runtime} ims={props.ims} />
                 </Route>
-                <Route path='/about'>
-                  <About></About>
+                <Route path='/bannercreator'>
+                  <BannerCreator runtime={props.runtime} ims={props.ims}></BannerCreator>
+                </Route>
+                <Route path='/offercreator'>
+                  <OfferCreator runtime={props.runtime} ims={props.ims}></OfferCreator>
                 </Route>
               </Switch>
             </View>

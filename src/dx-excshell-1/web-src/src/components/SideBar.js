@@ -9,14 +9,18 @@ function SideBar () {
   return (
     <ul className="SideNav">
       <li className="SideNav-item">
-        <NavLink className="SideNav-itemLink" activeClassName="is-selected" aria-current="page" exact to="/">Home</NavLink>
+        <NavLink className="SideNav-itemLink" activeClassName="is-selected" aria-current="page" exact to="/">Offers</NavLink>
       </li>
       <li className="SideNav-item">
-        <NavLink className="SideNav-itemLink" activeClassName="is-selected" aria-current="page" to="/actions">Your App Actions</NavLink>
+        <NavLink className="SideNav-itemLink" activeClassName="is-selected" aria-current="page" to="/offercreator">Offer Creator</NavLink>
       </li>
       <li className="SideNav-item">
-        <NavLink className="SideNav-itemLink" activeClassName="is-selected" aria-current="page" to="/about">About App Builder</NavLink>
+        <NavLink className="SideNav-itemLink" activeClassName="is-selected" aria-current="page" to="/bannercreator">Banner Creator</NavLink>
       </li>
+      <li className="SideNav-item">
+        <NavLink className="SideNav-itemLink" activeClassName="is-selected" aria-current="page" to="/actions">Debug</NavLink>
+      </li>
+      
     </ul>
   )
 }

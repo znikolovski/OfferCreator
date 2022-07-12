@@ -18,3 +18,38 @@ runtimeManifest:
           annotations:
             require-adobe-auth: true
             final: true
+        getAssets:
+          function: actions/getAssets/index.js
+          web: 'yes'
+          runtime: 'nodejs:14'
+          inputs:
+            LOG_LEVEL: debug
+            AEM_AUTHOR: $AEM_AUTHOR
+            AEM_STOCK_ENDPOINT: $AEM_STOCK_ENDPOINT
+          annotations:
+            require-adobe-auth: true
+            final: true
+        getOffers:
+          function: actions/getOffers/index.js
+          web: 'yes'
+          runtime: 'nodejs:14'
+          inputs:
+            LOG_LEVEL: debug
+            AEM_AUTHOR: $AEM_AUTHOR
+            AEM_OFFER_ENDPOINT: $AEM_OFFER_ENDPOINT
+            AEM_OFFER_PATH: $AEM_OFFER_PATH
+          annotations:
+            require-adobe-auth: true
+            final: true
+        createOffer:
+          function: actions/createOffer/index.js
+          web: 'yes'
+          runtime: 'nodejs:14'
+          inputs:
+            LOG_LEVEL: debug
+            AEM_AUTHOR: $AEM_AUTHOR
+            AEM_OFFER_ENDPOINT: $AEM_OFFER_ENDPOINT
+            AEM_OFFER_PATH: $AEM_OFFER_PATH
+          annotations:
+            require-adobe-auth: true
+            final: true

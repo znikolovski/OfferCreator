@@ -36,6 +36,11 @@ You can generate this file using the command `aio app use`.
 ## please provide your Adobe I/O Runtime credentials
 # AIO_RUNTIME_AUTH=
 # AIO_RUNTIME_NAMESPACE=
+# AEM_AUTHOR="https://author-p55117-e571178.adobeaemcloud.com"
+# AEM_OFFER_ENDPOINT="/api/assets/frescopa/en/offers.json"
+# AEM_OFFER_PATH="/api/assets/frescopa/en/offers/"
+# AEM_STOCK_ENDPOINT="/api/assets/frescopa/en/stock.json"
+
 ```
 
 ### `manifest.yml`

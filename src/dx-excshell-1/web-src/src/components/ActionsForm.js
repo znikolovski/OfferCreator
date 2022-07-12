@@ -111,20 +111,11 @@ const ActionsForm = (props) => {
       )}
       {!state.actionResponseError && state.actionResponse && (
         <View padding={`size-100`} marginTop={`size-100`} marginBottom={`size-100`} borderRadius={`small `}>
-          <StatusLight variant="positive">Success! See the complete response in your browser console.</StatusLight>
+          <StatusLight variant="positive">Content Fragment created successfully!</StatusLight>
         </View>
       )}
 
-      {Object.keys(actions).length === 0 && <Text>You have no actions !</Text>}
-        <TextArea
-            label="results"
-            isReadOnly={true}
-            width="size-6000"
-            height="size-6000"
-            maxWidth="100%"
-            value={state.actionResult}
-            validationState={( !state.actionResponseError ) ? 'valid' : 'invalid'}
-          />
+     
     </View>
   )
 

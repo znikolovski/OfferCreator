@@ -3,7 +3,7 @@
 */
 
 import React, { useState }  from 'react'
-import { Heading, View, Content, Link, Image, Text, TextArea, ActionMenu, Edit, Delete} from '@adobe/react-spectrum'
+import { Heading, View, Content, Link, Image, Text, TextArea, ActionMenu, Edit, Card, Delete} from '@adobe/react-spectrum'
 import {Item, ListView} from '@react-spectrum/list'
 
 import PropTypes from 'prop-types'
@@ -69,20 +69,23 @@ const OfferList = (props) => {
           )}
       </ListView>
 
+
+
       {state.actionResponseError && (
         <View padding={`size-100`} marginTop={`size-100`} marginBottom={`size-100`} borderRadius={`small `}>
           <StatusLight variant="negative">Failure! See the complete error in your browser console.</StatusLight>
         </View>
       )}
+      
 
-      <TextArea
+      {/* <TextArea
             label="Debug"
             isReadOnly={true}
             width="size-6000"
             height="size-6000"
             maxWidth="100%"
             value={state.actionResult}
-          />
+          /> */}
     </View>
   )
 }

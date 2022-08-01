@@ -111,7 +111,7 @@ const ActionsForm = (props) => {
       )}
       {!state.actionResponseError && state.actionResponse && (
         <View padding={`size-100`} marginTop={`size-100`} marginBottom={`size-100`} borderRadius={`small `}>
-          <StatusLight variant="positive">Content Fragment created successfully!</StatusLight>
+          <StatusLight variant="positive">Action called successfully!</StatusLight>
         </View>
       )}
 

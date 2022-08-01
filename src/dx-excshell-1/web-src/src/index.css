@@ -47,3 +47,22 @@ body {
   color: var(--spectrum-alias-text-color-hover,var(--spectrum-global-color-gray-900));
   background-color: var(--spectrum-alias-highlight-hover);
 }
+
+.wiz-body {
+  min-height: 300px;
+}
+
+.wiz-footer {
+  margin-top: 10px;
+  display: flex;
+  justify-content: left;
+  gap: 10px;
+}
+
+.offer-intent {
+  margin-top: 10px;
+}
+
+.wizardsummary {
+  margin-top: 15px;
+}

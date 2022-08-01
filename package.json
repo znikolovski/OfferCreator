@@ -8,6 +8,7 @@
     "@adobe/exc-app": "^0.2.21",
     "@adobe/react-spectrum": "^3.4.0",
     "@react-spectrum/list": "^3.0.0-beta.0",
+    "@spectrum-icons/illustrations": "^3.3.1",
     "@spectrum-icons/workflow": "^3.2.0",
     "core-js": "^3.6.4",
     "node-fetch": "^2.6.0",

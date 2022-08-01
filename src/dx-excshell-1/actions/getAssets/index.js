@@ -51,7 +51,7 @@ async function main (params) {
       asset["title"] = content["entities"][key]["properties"]["metadata"]["dc:title"];
       asset["originalPath"] = originalPath;
       damPath = originalPath.replace("api/assets", "content/dam");
-      publishPath = damPath.replace("author", "publish");
+      publishPath = damPath //.replace("author", "publish");
       asset["thumbnailPath"] = publishPath.replace("renditions/original", renditionname);
       assetList.push(asset);
     }

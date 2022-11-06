@@ -11,11 +11,15 @@ async function main (params) {
     // 'info' is the default level if not set
     logger.info('** CREATE OFFER **')
     logger.info("Title: " + params.title)
+    logger.info("Brief: " + params.brief)
     logger.info("Description: " + params.description)
+    logger.info("Audience Count: " + params.audiencecount)
+    
 
     offername = params.title
     offerdescription = params.description
-
+    offerbrief = params.brief
+ 
     // extract the user Bearer token from the Authorization header
     const token = getBearerToken(params)
     const apiEndpoint =  params.AEM_AUTHOR + params.AEM_OFFER_PATH + offername
@@ -28,7 +32,7 @@ async function main (params) {
               }
           },
           "contentFragment": true,
-          "description": offerdescription,
+          "description": offerbrief,
           "title": offername,
           "name": offername,
           "cq:model": "/conf/frescopa/settings/dam/cfm/models/offer"
@@ -49,6 +53,31 @@ async function main (params) {
       throw new Error('request to ' + apiEndpoint + ' failed with status code ' + res.status)
     }
     const content = await res.json();
+
+    console.log("CF Created");
+
+    if (params.audiencecount > 0) {
+      const apiEndpoint =  params.AEM_AUTHOR + "/content/dam/frescopa/en/offers/" + offername + ".cfm.content.json";
+      console.log("**** Audience Count: " + params.audiencecount)
+
+      // formData: {
+      //   ':operation': 'create',
+      //   'variation': 'foo',
+      //   '_charset_': 'utf-8'
+      // }
+
+      const resvar = await fetch(apiEndpoint, {
+        method: 'post',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'content-type': 'multipart/form-data; boundary=<calculated when request is sent>'
+  
+        },
+        body: formData
+      })
+
+      const contentvariation = await resvar.json();
+    }
 
 
     result = offername + ' Content Fragment created'

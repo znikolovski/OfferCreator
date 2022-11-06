@@ -3,8 +3,10 @@
 */
 
 import React, { useState }  from 'react'
-import { Heading, View, Content, Link, Image, Text, TextArea, ActionMenu, Edit, Card, Delete} from '@adobe/react-spectrum'
-import {Item, ListView} from '@react-spectrum/list'
+import { Heading, View, Content, Link, Image, Text, TextArea, StatusLight, ActionButton, Button, ActionMenu, Edit, Card, Delete, Flex, TableView, TableHeader, Column, TableBody, Row, Cell, IllustratedMessage} from '@adobe/react-spectrum'
+import NotFound from '@spectrum-icons/illustrations/NotFound';
+import EditIcon from '@spectrum-icons/workflow/Edit';
+import {Item, ListView} from '@react-spectrum/list';
 
 import PropTypes from 'prop-types'
 import {useAsyncList} from '@react-stately/data'
@@ -22,7 +24,31 @@ const OfferList = (props) => {
     actionResult: null
   })
 
-  let assetList = useAsyncList({
+  function renderEmptyState() {
+    return (
+      <IllustratedMessage>
+        <NotFound />
+        <Heading>No results</Heading>
+        <Content>No results found</Content>
+      </IllustratedMessage>
+    );
+  }
+
+  const openInNewTab = url => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  let columns = [
+    {name: 'Offer ID', uid: 'title', width: 100},
+    {name: 'Description', uid: 'description', width: 400},
+    {name: 'Modified by', uid: 'modifiedby', width: 200},
+    {name: 'Content Fragment', uid: 'cfpath', width: 200},
+    {name: 'Experience Fragment', uid: 'xfpath', width: 200}
+
+  ];
+
+  
+  let list = useAsyncList({
     async load({signal}) {
       const headers = state.actionHeaders || {}
       const params = state.actionParams || {}
@@ -34,9 +60,7 @@ const OfferList = (props) => {
       if (props.ims.org && !headers['x-gw-ims-org-id']) {
         headers['x-gw-ims-org-id'] = props.ims.org
       }
-      
-      
-      
+            
       setState({ ...state, actionInvokeInProgress: true, actionResult: 'calling action ... ' })
       let res = await actionWebInvoke(actions['getOffers'], headers, params);
       setState({ ...state, actionInvokeInProgress: false, actionResult: ' ' })
@@ -53,39 +77,45 @@ const OfferList = (props) => {
 
 
   return (
-    <View width="size-6000">
+    <View>
       <Heading level={1}>Offers</Heading>
-
-      <ListView
-        items={assetList.items}
-        selectionMode="multiple"
-        aria-label="Static ListView items example"
-        maxWidth="size-6000"
-      >
-         {(item) => (
-          <Item key={item.id} textValue={item.title}>
-              <Text>{item.title} - {item.description} </Text>
-          </Item>
+      <Flex minHeight="size-3000" height="100%" width="100%" direction="column" gap="size-150">
+      <TableView
+          renderEmptyState={renderEmptyState}
+          flex
+          density="spacious" 
+          >
+          <TableHeader columns={columns}>
+            {column => (
+              <Column
+                key={column.uid}
+                width={column.width}
+                align={column.uid === 'date' ? 'end' : 'start'}>
+                {column.name}
+              </Column>
+            )}
+          </TableHeader>
+          <TableBody
+          items={list.items}
+          loadingState={list.loadingState}
+        
+        >
+          {(item) => (
+            <Row key={item.title}>
+              <Cell>{item.title}</Cell>
+              <Cell>{item.description}</Cell>
+              <Cell>{item.modifiedby}</Cell>
+              <Cell><StatusLight variant="positive"><ActionButton width="size-800" onClick={() => openInNewTab(item.cfedit)}><EditIcon width="size-175" marginEnd="size-130" /><Text> Edit</Text></ActionButton></StatusLight>
+                </Cell>
+              <Cell><ActionButton onClick={() => openInNewTab(item.cfedit)}><Text>Create</Text></ActionButton></Cell>
+            </Row>
+ //           <Row key={item.name}>{(key) => <Cell>{item[key]}</Cell>}</Row>
           )}
-      </ListView>
-
-
-
-      {state.actionResponseError && (
-        <View padding={`size-100`} marginTop={`size-100`} marginBottom={`size-100`} borderRadius={`small `}>
-          <StatusLight variant="negative">Failure! See the complete error in your browser console.</StatusLight>
-        </View>
-      )}
+        </TableBody> 
+      </TableView>
+      </Flex>
+      <Button marginTop="size-100"><Text>Create Offer</Text></Button>
       
-
-      {/* <TextArea
-            label="Debug"
-            isReadOnly={true}
-            width="size-6000"
-            height="size-6000"
-            maxWidth="100%"
-            value={state.actionResult}
-          /> */}
     </View>
   )
 }

@@ -45,6 +45,9 @@ async function main (params) {
       asset["id"] = key;
       asset["title"] = content["entities"][key]["properties"].title;
       asset["description"] = content["entities"][key]["properties"].description;
+      asset["modifiedby"] = content["entities"][key]["properties"].modifiedBy;
+      asset["cfauthlink"] = content["entities"][key]["links"][0].href;
+      asset["cfedit"] = asset["cfauthlink"].replace("api/assets", "ui#/aem/editor.html/content/dam").replace(/\.[^/.]+$/, "");
            
       assetList.push(asset);
     }

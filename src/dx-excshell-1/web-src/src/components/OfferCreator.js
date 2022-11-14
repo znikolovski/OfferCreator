@@ -1,13 +1,16 @@
 import React, { useState }  from 'react'
-import { Heading, View, ActionButton, Well, ProgressCircle, StatusLight } from '@adobe/react-spectrum'
+import { Heading, View, Button, Text, ActionButton, Well, ProgressCircle, StatusLight } from '@adobe/react-spectrum'
 import OfferIntent from "./OfferIntent";
 import AudienceList from "./AudienceList";
 import OfferPreview from "./OfferPreview";
-import actions from '../config.json'
-import actionWebInvoke from '../utils'
+import actions from '../config.json';
+import actionWebInvoke from '../utils';
+import {Link as RouterLink, useHistory} from 'react-router-dom';
+
 
 const OfferCreator = (props) => {
   const [page, setPage] = useState(0);
+  const history = useHistory();
 
   const [offerData, setOfferData] = useState({
     keymessage: "",
@@ -29,7 +32,7 @@ const OfferCreator = (props) => {
     actionResult: null
   });
   
-  const FormTitles = ["What is the key message?", "Who is the target audience?", "Is this what you want created?"];
+  const FormTitles = ["Create a new Offer", "Who is the target audience?", "Is this what you want created?"];
   const PageDisplay = () => {
     if (page === 0) {
       return <OfferIntent offerData={offerData} setOfferData={setOfferData} />;
@@ -38,6 +41,10 @@ const OfferCreator = (props) => {
     } else {
       return <OfferPreview offerData={offerData} setOfferData={setOfferData} props={props} />;
     } 
+  };
+
+  const openRoute = url => {
+    history.push("/", {from:"offercreator"});    
   };
 
   async function invokeAction () {
@@ -57,6 +64,8 @@ const OfferCreator = (props) => {
     console.log("Offer #" + val);
     params.title = val.toString();
     params.description = offerData.offerCopy;
+    params.brief = offerData.keymessage;
+
 
     try {
       const actionResponse = await actionWebInvoke(actions["dx-excshell-1/createOffer"], headers, params)
@@ -68,7 +77,7 @@ const OfferCreator = (props) => {
         actionResponseError: null,
         actionInvokeInProgress: false
       })
-      console.log(`Response :`, actionResponse)
+      console.log(`Response :`, actionResponse);
     } catch (e) {
       console.error(e)
       
@@ -83,6 +92,7 @@ const OfferCreator = (props) => {
       </div>
       <div className="wiz-body">{PageDisplay()}</div>
       <div className="wiz-footer">
+          {!state.actionResponseError && !state.actionResponse && (
           <ActionButton
             isHidden={page == 0}
             onPress={() => {
@@ -91,6 +101,9 @@ const OfferCreator = (props) => {
           >
               Prev
           </ActionButton>
+          )}
+          {!state.actionResponseError && !state.actionResponse && (
+          
           <ActionButton
             onPress={() => {
               if (page === FormTitles.length - 1) {
@@ -101,8 +114,10 @@ const OfferCreator = (props) => {
               }
             }}
           >
-            {page === FormTitles.length - 1 ? "Create Offers" : "Next"}
+            {page === FormTitles.length - 1 ? "Create Offer" : "Next"}
           </ActionButton>
+          )}
+          <ActionButton onPress={() => openRoute()}><Text flex>Cancel</Text></ActionButton>
           <ProgressCircle
                     aria-label="loading"
                     isIndeterminate
@@ -113,16 +128,18 @@ const OfferCreator = (props) => {
         {state.actionResponseError && (
         <View padding={`size-100`} marginTop={`size-100`} marginBottom={`size-100`} borderRadius={`small `}>
           <StatusLight variant="negative">Failure! See the complete error in your browser console.</StatusLight>
+          <Button marginTop="size-100" onPress={() => openRoute()}><Text flex>Offer List</Text></Button>
         </View>
         )}
         {!state.actionResponseError && state.actionResponse && (
           <View padding={`size-100`} marginTop={`size-100`} marginBottom={`size-100`} borderRadius={`small `}>
             <StatusLight variant="positive">Content Fragment { offerData.offerID } created successfully!</StatusLight>
+            <Button marginTop="size-100" onPress={() => openRoute()}><Text flex>Offer List</Text></Button>
           </View>
         )}
         <div className="wizardsummary">
           <Well>
-            <p><strong>Key Message: </strong>{offerData.keymessage}</p>
+            <p><strong>Offer Description: </strong>{offerData.keymessage}</p>
             <p><strong>Selected Audiences: </strong>{offerData.selectedAudience}</p>
             <p><strong>Offer Copy: </strong>{offerData.offerCopy}</p>
           </Well>

@@ -3,18 +3,20 @@ import { Heading, View, Button, Content, Link, Image, Flex, Text, Form, Progress
   Picker, Edit, Delete, TextArea} from '@adobe/react-spectrum'
 
 function OfferIntent({ offerData, setOfferData  }) {
+
+  
   return (
     <div className="offer-intent">
 
+      <h3>Enter a description that describes the intent of the Offer</h3>
       <TextArea 
-        isRequired
+        isRequired necessityIndicator="icon"
         value={offerData.keymessage}
         onChange={(input) =>
           setOfferData({ ...offerData, keymessage : input })
         }
-        width="size-3600"
+        width="800px"
         maxWidth="100%"  />
-
     </div>
   );
 }

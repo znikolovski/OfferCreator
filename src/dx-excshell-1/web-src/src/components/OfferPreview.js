@@ -1,5 +1,5 @@
 import React, { useState }  from 'react'
-import { Heading, View, Button, Content, Link, Image, Flex, Text, Form, ProgressCircle, TextField, TextArea, ActionButton, TableView, TableHeader, Column, TableBody, Row, Cell, StatusLight,
+import { Heading, View, Button, Content, NavLink, Link, Image, Flex, Text, Form, ProgressCircle, TextField, TextArea, ActionButton, TableView, TableHeader, Column, TableBody, Row, Cell, StatusLight,
   Picker, Edit, Delete} from '@adobe/react-spectrum'
 import actions from '../config.json'
 import actionWebInvoke from '../utils'
@@ -48,12 +48,12 @@ function OfferPreview({ offerData, setOfferData , props }) {
       <TextArea
         label="Creative Brief"
         height="size-1250"
-        width="size-3600"
-        value={"Create an offer for " + offerData.keymessage + " targetting an audience of " + offerData.selectedAudience.name + "."}
+        width="1200px"
+        value={"Create an offer to " + offerData.keymessage + " targeting an audience of " + offerData.selectedAudience.currentKey + "."}
       />
       
       <Flex direction="row" height="size-800" gap="size-100" >
-        <ActionButton onPress={writeCopy.bind(this)}>Copywrite</ActionButton>
+        <Button onPress={writeCopy.bind(this)}>Copywrite</Button>
       </Flex>
 
       <TextArea
@@ -64,10 +64,7 @@ function OfferPreview({ offerData, setOfferData , props }) {
         }
         height="size-1250"
         width="size-3600"
-       />
-
-
-
+       /> 
       </Flex>
     </div>
   );

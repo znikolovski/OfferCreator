@@ -32,18 +32,12 @@ function App (props) {
         <Provider theme={defaultTheme} colorScheme={`light`}>
           <Grid
             areas={['sidebar content']}
-            columns={['256px', '3fr']}
+            columns={['0px', '3fr']}
             rows={['auto']}
             height='100vh'
             gap='size-100'
           >
-            <View
-              gridArea='sidebar'
-              backgroundColor='gray-200'
-              padding='size-200'
-            >
-              <SideBar></SideBar>
-            </View>
+    
             <View gridArea='content' padding='size-200'>
               <Switch>
                 <Route exact path='/'>

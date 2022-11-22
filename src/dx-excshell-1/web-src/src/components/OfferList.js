@@ -23,7 +23,8 @@ const OfferList = (props) => {
     actionHeaders: null,
     actionParams: null,
     actionInvokeInProgress: false,
-    actionResult: null
+    actionResult: null,
+    xfcreation: false
   })
 
   const history = useHistory();
@@ -48,7 +49,7 @@ const OfferList = (props) => {
 
   const refreshTable = url => {
     console.log("Refresh Table");  
-    list = "";  
+    list.reload();  
   };
 
 
@@ -83,9 +84,9 @@ const OfferList = (props) => {
           params.xfname = offer;
           params.xfdescription = description;
            
-          setState({ ...state, actionInvokeInProgress: true, actionResult: 'calling action ... ' })
+          setState({ ...state, actionInvokeInProgress: true, actionResult: 'calling action ... ', xfcreation: true })
           let res = await actionWebInvoke(actions['copyXFandRename'], headers, params);
-          setState({ ...state, actionInvokeInProgress: false, actionResult: ' ' })
+          setState({ ...state, actionInvokeInProgress: false, actionResult: ' ', xfcreation: false })
       
           console.log('copyXFandRename Action Result: ', res);
           alert("Experience Fragment Created!");
@@ -187,7 +188,13 @@ const OfferList = (props) => {
       </Flex>
       <Button marginTop="size-100" onPress={() => openRoute()}><Text flex>Create Offer</Text></Button>
       <Button marginTop="size-100" marginStart="size-100" onPress={() => refreshTable()}><Text flex>Refresh List</Text></Button>
-      
+      <ProgressCircle
+                    marginTop="size-100"
+                    aria-label="loading"
+                    isIndeterminate
+                    isHidden={!state.xfcreation}
+                    marginStart="size-100"
+                  />
       {!state.actionResponseError && state.actionResponse && (
           <View padding={`size-100`} marginTop={`size-100`} marginBottom={`size-100`} borderRadius={`small `}>
             <StatusLight variant="positive">Experience Fragment created successfully!</StatusLight>

@@ -16,7 +16,8 @@ async function main (params) {
     logger.info("Audience Count: " + params.audiencecount)
     
 
-    offername = params.title
+    offername = params.name
+    offertitle = params.title
     offerdescription = params.description
     offerbrief = params.brief
  
@@ -28,7 +29,10 @@ async function main (params) {
           "properties": {
             "elements": {
               "headline": {
-                  "value": offerdescription
+                  "value": offertitle
+              },
+              "detail" : {
+                "value": offerdescription
               }
           },
           "contentFragment": true,

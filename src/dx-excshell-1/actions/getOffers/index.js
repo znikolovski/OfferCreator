@@ -41,18 +41,20 @@ async function main (params) {
     var assetList = [];
     
     for (let key in content["entities"]) {
-      var asset = {};
-      asset["id"] = key;
-      asset["title"] = content["entities"][key]["properties"].title;
-      asset["description"] = content["entities"][key]["properties"].description;
-      asset["modifiedby"] = content["entities"][key]["properties"].modifiedBy;
-      asset["published"] = content["entities"][key]["properties"].published;
-      asset["cfauthlink"] = content["entities"][key]["links"][0].href;
-      asset["xfcreated"] = content["entities"][key]["properties"]["metadata"].xfcreated;
-      asset["xfauthlink"] = params.AEM_AUTHOR + "/ui#/aem/editor.html/" + params.AEM_XF_DESTINATION_PATH +  asset["title"] + "/master.html";
-      asset["cfedit"] = asset["cfauthlink"].replace("api/assets", "ui#/aem/editor.html/content/dam").replace(/\.[^/.]+$/, "");
-           
-      assetList.push(asset);
+      if(!content["entities"][key]["class"][0].includes("folder")){
+        var asset = {};
+        asset["id"] = key;
+        asset["title"] = content["entities"][key]["properties"].title;
+        asset["description"] = content["entities"][key]["properties"].description;
+        asset["modifiedby"] = content["entities"][key]["properties"].modifiedBy;
+        asset["published"] = content["entities"][key]["properties"].published;
+        asset["cfauthlink"] = content["entities"][key]["links"][0].href;
+        asset["xfcreated"] = content["entities"][key]["properties"]["metadata"].xfcreated;
+        asset["xfauthlink"] = params.AEM_AUTHOR + "/ui#/aem/editor.html/" + params.AEM_XF_DESTINATION_PATH +  asset["title"] + "/master.html";
+        asset["cfedit"] = asset["cfauthlink"].replace("api/assets", "ui#/aem/editor.html/content/dam").replace(/\.[^/.]+$/, "");
+            
+        assetList.push(asset);
+      }
     }
   
     const response = {

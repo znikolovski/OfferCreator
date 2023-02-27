@@ -37,9 +37,9 @@ async function main (params) {
           },
           "contentFragment": true,
           "description": offerbrief,
-          "title": offername,
+          "title": offertitle,
           "name": offername,
-          "cq:model": "/conf/frescopa/settings/dam/cfm/models/offer"
+          "cq:model": "/conf/wknd/settings/dam/cfm/models/offer"
         }
     }
 
@@ -61,7 +61,7 @@ async function main (params) {
     console.log("CF Created");
 
     if (params.audiencecount > 0) {
-      const apiEndpoint =  params.AEM_AUTHOR + "/content/dam/frescopa/en/offers/" + offername + ".cfm.content.json";
+      const apiEndpoint =  params.AEM_AUTHOR + "/content/dam/wknd/en/offers/" + offername + ".cfm.content.json";
       console.log("**** Audience Count: " + params.audiencecount)
 
       // formData: {

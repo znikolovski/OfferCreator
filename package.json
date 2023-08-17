@@ -18,7 +18,9 @@
     "react-dom": "^16.13.1",
     "react-error-boundary": "^1.2.5",
     "react-router-dom": "^5.2.0",
-    "regenerator-runtime": "^0.13.5"
+    "regenerator-runtime": "^0.13.5",
+    "workfront-api": "^8.1.1",
+    "workfront-api-constants": "^2.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.8.7",

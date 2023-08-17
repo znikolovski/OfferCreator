@@ -1,6 +1,7 @@
 const fetch = require('node-fetch')
 const { Core } = require('@adobe/aio-sdk')
 const { errorResponse, getBearerToken, stringParameters, checkMissingRequestInputs } = require('../utils')
+const Workfront = require('workfront-api')
 
 // main function that will be executed by Adobe I/O Runtime
 async function main (params) {
@@ -14,7 +15,11 @@ async function main (params) {
     logger.info("Brief: " + params.brief)
     logger.info("Description: " + params.description)
     logger.info("Audience Count: " + params.audiencecount)
-    
+
+    const instance = new Workfront.NodeApi({
+      url: params.WORKFRONT_URL,
+      apiKey: params.WORKFRONT_API_KEY
+    });
 
     offername = params.name
     offertitle = params.title
@@ -39,7 +44,7 @@ async function main (params) {
           "description": offerbrief,
           "title": offertitle,
           "name": offername,
-          "cq:model": "/conf/wknd/settings/dam/cfm/models/offer"
+          "cq:model": "/conf/securbank/settings/dam/cfm/models/offer"
         }
     }
 
@@ -60,8 +65,20 @@ async function main (params) {
 
     console.log("CF Created");
 
+    const taskUrl = `https://experience.adobe.com/#/@ags050/custom-apps/28538-519LimeMoose/?cf=%2Fcontent%2Fdam%2Fsecurbank%2Fen%2Foffers%2F${offername}&variation=main#/`;
+
+    instance.create('TASK', {"projectID":"63102cdc005a4d1c2c44b9c627ff2a4c","name":"Review offer - " + offertitle,"description":offerdescription,"priority":2,"plannedCompletionDate":null,"assignments":[{"assignedToID":"b65b4f9d3e7b4b3d843bb99c9d6787f9"}],"URL": taskUrl,"duration":"5","durationType":"S","isDurationLocked":true}).then(
+        function(data) {
+        console.log('Created a task');
+      },
+      function(error) {
+        console.log('Login failure. Received data:');
+        console.log(error);
+      }
+    )
+
     if (params.audiencecount > 0) {
-      const apiEndpoint =  params.AEM_AUTHOR + "/content/dam/wknd/en/offers/" + offername + ".cfm.content.json";
+      const apiEndpoint =  params.AEM_AUTHOR + "/content/dam/securbank/en/offers/" + offername + ".cfm.content.json";
       console.log("**** Audience Count: " + params.audiencecount)
 
       // formData: {

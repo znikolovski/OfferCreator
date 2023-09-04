@@ -65,9 +65,11 @@ const OfferCreator = (props) => {
     var val = Math.floor(1000 + Math.random() * 9000);
     console.log("Offer #" + val);
     params.name = val.toString();
-    params.title = offerData.offerTitle;
-    params.description = offerData.offerDescription;
+    params.offers = offerData.offers;
+    // params.title = offerData.offerTitle;
+    // params.description = offerData.offerDescription;
     params.brief = offerData.keymessage;
+    params.audiences = offerData.selectedAudience;
 
 
     try {

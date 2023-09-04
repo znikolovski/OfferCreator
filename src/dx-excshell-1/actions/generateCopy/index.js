@@ -2,13 +2,11 @@ const fetch = require('node-fetch')
 const { Core } = require('@adobe/aio-sdk')
 const { errorResponse, getBearerToken, stringParameters, checkMissingRequestInputs } = require('../utils')
 const { Configuration, OpenAIApi } = require("openai");
+// const OpenAI = require('openai');
 
 // main function that will be executed by Adobe I/O Runtime
 async function main (params) {
 
-  const configuration = new Configuration({
-    apiKey: params.CHAT_GPT_KEY,
-  });
   // create a Logger
   const logger = Core.Logger('main', { level: params.LOG_LEVEL || 'info' })
 
@@ -16,25 +14,34 @@ async function main (params) {
     // 'info' is the default level if not set
     logger.info('** GENERATE COPYWRITE **')
     logger.info("Prompt: " + params.prompt)
+    logger.info("Audiences: " + params.audiences)
 
-    aiPrompt = "As a JSON object, " + params.prompt
- 
-    const openai = new OpenAIApi(configuration);
-    const openAIresponse = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: aiPrompt,
-      temperature: 0,
-      max_tokens: 150,
-      top_p: 1,
-      frequency_penalty: 0.5,
-      presence_penalty: 0,
+    let audiences = "default"
+    if(params.audiences) {
+      for (let index = 0; index < params.audiences.length; index++) {
+        const element = params.audiences[index];
+        audiences = audiences.concat(",", element.toLowerCase());
+      }
+    }
+
+    const configuration = new Configuration({
+      apiKey:  params.CHAT_GPT_KEY,
     });
+    const openai = new OpenAIApi(configuration);
+    
+    aiPrompt = "As a JSON object, " + params.prompt + " aimed at the following audiences: " + audiences
 
-    console.log("AI Response generated: " + openAIresponse.data.choices[0].text);
+    const messages = [{role: "user", content: aiPrompt}]
+
+    const chatCompletion = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: messages,
+    });
+    console.log("AI Response generated: " + JSON.stringify(chatCompletion.data.choices[0].message.content));
 
     const response = {
       statusCode: 200,
-      body: JSON.parse(openAIresponse.data.choices[0].text)
+      body: chatCompletion.data.choices[0].message.content
     }
 
     // log the response status code

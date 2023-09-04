@@ -10,11 +10,21 @@ function OfferPreview({ offerData, setOfferData , props }) {
  
 
   console.log('offerData', offerData);
+  console.log('selectedAudiences', offerData.selectedAudience.values())
+  for (var it = offerData.selectedAudience.values(), val= null; val=it.next().value; ) {
+    console.log(val);
+  }
+  
 
   async function invokeAction () {
     console.log("Create Offer invoked")
     const headers =  {}
-    const params =  { prompt: offerData.offerPrompt, generations: offerData.offerGenerations}
+    console.log(offerData.selectedAudience)
+    let audiences = [];
+    for (var it = offerData.selectedAudience.values(), val= null; val=it.next().value; ) {
+      audiences.push(val);
+    }
+    const params =  { prompt: offerData.offerPrompt, generations: offerData.offerGenerations, audiences: audiences}
         // set the authorization header and org from the ims props object
         if (props.ims.token && !headers.authorization) {
           headers.authorization = `Bearer ${props.ims.token}`
@@ -26,7 +36,7 @@ function OfferPreview({ offerData, setOfferData , props }) {
     try {
       const actionResponse = await actionWebInvoke(actions["dx-excshell-1/generateCopy"], headers, params)
       formattedResult = actionResponse
-      setOfferData({ ...offerData, offerTitle : formattedResult.title, offerDescription: formattedResult.description })
+      setOfferData({ ...offerData, offers: formattedResult })
     } catch (e) {
       console.error(e)
       
@@ -57,7 +67,8 @@ function OfferPreview({ offerData, setOfferData , props }) {
 
       <NumberField
         label="Variations"
-        defaultValue={1}
+        defaultValue={offerData.selectedAudience.size + 1}
+        isDisabled
         minValue={1}
         onChange={(value) =>
           setOfferData({ ...offerData, offerGenerations : value })}
@@ -70,7 +81,7 @@ function OfferPreview({ offerData, setOfferData , props }) {
       <Flex direction="row" height="size-1250" gap="size-100" >
       <TextArea
         label="Offer Title"
-        value={offerData.offerTitle}
+        value={offerData.offers ? offerData.offers.default.headline : ""}
         onChange={(value) =>
           setOfferData({ ...offerData, offerTitle : value })
         }
@@ -79,7 +90,7 @@ function OfferPreview({ offerData, setOfferData , props }) {
        /> 
        <TextArea
         label="Offer Description"
-        value={offerData.offerDescription}
+        value={offerData.offers ? offerData.offers.default.description : ""}
         onChange={(value) =>
           setOfferData({ ...offerData, offerDescription : value })
         }

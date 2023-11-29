@@ -5,7 +5,7 @@ import NotFound from '@spectrum-icons/illustrations/NotFound';
 import {useAsyncList} from '@react-stately/data'
 import PropTypes from 'prop-types'
 import actions from '../config.json'
-import actionWebInvoke from '../utils'
+import {actionWebInvoke} from '../utils'
 
 function AudienceList({ offerData, setOfferData , props }) {
 
@@ -51,6 +51,8 @@ function AudienceList({ offerData, setOfferData , props }) {
         audienceresult = res.audiences.filter((audience) => audience.origin == "cloud")
         console.log("filtered audiences: ", audienceresult);
       }
+
+      offerData.audiences = audienceresult
 
       return {
   

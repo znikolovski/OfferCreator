@@ -4,8 +4,9 @@ import OfferIntent from "./OfferIntent";
 import AudienceList from "./AudienceList";
 import OfferPreview from "./OfferPreview";
 import actions from '../config.json';
-import actionWebInvoke from '../utils';
+import {actionWebInvoke} from '../utils';
 import {Link as RouterLink, useHistory} from 'react-router-dom';
+import OfferWizard from './OfferWizard';
 
 
 const OfferCreator = (props) => {
@@ -22,6 +23,8 @@ const OfferCreator = (props) => {
     offerID: ""
   });
 
+  const [items, setItems] = useState([]);
+
   const [state, setState] = useState({
     actionResponseError: null,
     actionHeaders: null,
@@ -34,15 +37,18 @@ const OfferCreator = (props) => {
     actionResult: null
   });
   
-  const FormTitles = ["Create a new Offer", "Who is the target audience?", "Is this what you want created?"];
+  const FormTitles = ["Create a new Offer", "Select audiences for variations", "Offer Wizard", "Offer Preview"];
   const PageDisplay = () => {
     if (page === 0) {
       return <OfferIntent offerData={offerData} setOfferData={setOfferData} />;
     } else if (page === 1) {
       return <AudienceList offerData={offerData} setOfferData={setOfferData} props={props} />;
+    } else if (page === 2) {
+      return <OfferWizard offerData={offerData} items={items} setOfferData={setOfferData} setItems={setItems} props={props} />;
+      // return <OfferPreview offerData={offerData} setOfferData={setOfferData} props={props} />;
     } else {
-      return <OfferPreview offerData={offerData} setOfferData={setOfferData} props={props} />;
-    } 
+      return <OfferPreview offerData={offerData} items={items} setOfferData={setOfferData} setItems={setItems} props={props} />;
+    }
   };
 
   const openRoute = url => {

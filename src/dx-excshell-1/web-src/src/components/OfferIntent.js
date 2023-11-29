@@ -8,7 +8,7 @@ function OfferIntent({ offerData, setOfferData  }) {
   return (
     <div className="offer-intent">
 
-      <h3>Enter a description that describes the intent of the Offer</h3>
+      <h3>Describe the key segment</h3>
       <TextArea 
         isRequired necessityIndicator="icon"
         value={offerData.keymessage}

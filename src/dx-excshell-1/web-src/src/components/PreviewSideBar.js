@@ -7,10 +7,13 @@ import { NavLink } from 'react-router-dom'
 import { Heading, Header, ActionGroup, ActionButton, Text,Button, View, TagGroup, Item, Avatar, Image, Selection, ProgressCircle, Flex } from '@adobe/react-spectrum'
 import EditIcon from '@spectrum-icons/workflow/Edit';
 import UploadToCloud from '@spectrum-icons/workflow/UploadToCloud';
+import Draw from '@spectrum-icons/workflow/Draw';
+import AlertCircle from '@spectrum-icons/workflow/AlertCircle';
+import BeakerShare from '@spectrum-icons/workflow/BeakerShare';
 import { actionWebInvoke } from '../utils';
 import actions from '../config.json'
 
-function PreviewSideBar ({offerData, items, setOfferData, setItems, props}) {
+function PreviewSideBar ({offerData, items, setOfferData, setItems, props, setPage}) {
   const [aemUploading, setIsAEMUploading] = useState(false);
 
   let showDetails = true;
@@ -38,18 +41,32 @@ function PreviewSideBar ({offerData, items, setOfferData, setItems, props}) {
         try {
           for (let index = 0; index < items.length; index++) {
             const item = items[index];
-            const params =  { name: item.name, selectedImage: item.selectedImage, prompt: item.fireflyPrompt}
-            console.log(params)
-            const actionResponse = await actionWebInvoke(actions["dx-excshell-1/createImage"], headers, params)
-            console.log('Response received', actionResponse)
-            const newItem = {
-              firefallReponse: item.firefallReponse,
-              imagePath: actionResponse,
-              id: item.id,
-              name: item.name,
-              description: item.keywords
+            if(item.isFromDam) {
+              const newItem = {
+                firefallReponse: item.firefallResponse,
+                imagePath: item.fireflyResponse[0].path,
+                id: item.id,
+                name: item.name,
+                description: item.keywords ? item.keywords : item.description,
+                isFromDam: true
+              }
+              cfData.push(newItem);
+            } else {
+              const params =  { name: item.name, selectedImage: item.selectedImage, prompt: item.fireflyPrompt}
+              console.log(params)
+              const actionResponse = await actionWebInvoke(actions["dx-excshell-1/createImage"], headers, params)
+              console.log('Response received', actionResponse)
+              const newItem = {
+                firefallReponse: item.firefallResponse,
+                imagePath: actionResponse,
+                id: item.id,
+                name: item.name,
+                description: item.keywords ? item.keywords : item.description,
+                isFromDam: false
+              }
+              cfData.push(newItem);
             }
-            cfData.push(newItem);
+            
           }
 
           const actionResponse = await actionWebInvoke(actions["dx-excshell-1/createOffer"], headers, {cfData: cfData})
@@ -76,11 +93,15 @@ function PreviewSideBar ({offerData, items, setOfferData, setItems, props}) {
   return (
     <View position='sticky' top='size-0' start='size-0' >
       <View isHidden={!showDetails}>
-
         <Header><strong>Segments</strong></Header>
-        <ActionGroup selectionMode="single" defaultSelectedKeys={[items[0].id]} marginTop="10px" marginBottom="20px" onAction={updateVariation} >
+        <ActionGroup selectionMode="single" defaultSelectedKeys={[''+items[0].id]} marginTop="10px" marginBottom="20px" onAction={updateVariation} >
           {items.map(function(item){
-            return <Item key={item.id}>{item.name}</Item>;
+            if(item.error)
+              return <Item key={item.id}><AlertCircle/><Text>{item.name}</Text></Item>
+            else if(item.loadingState)
+              return <Item key={item.id}><BeakerShare/><Text>{item.name}</Text></Item>
+            else
+              return <Item key={item.id} >{item.name}</Item>;
           })}
         </ActionGroup>
 
@@ -90,17 +111,17 @@ function PreviewSideBar ({offerData, items, setOfferData, setItems, props}) {
         </TagGroup>
 
         <Flex direction="row" height="size-800" gap="size-100" marginTop="size-200">
-        <Button width="size-1400" aria-label="Upload NBC to AEM" marginTop="20px" marginEnd="10px" onPress={() => invokeOfferCreatorAction()}><UploadToCloud width="size-200" /><Text>Send to AEM</Text></Button>
+          <Button width="size-1400" aria-label="Upload NBC to AEM" marginTop="20px" marginEnd="10px" onPress={() => invokeOfferCreatorAction()}><UploadToCloud width="size-200" /><Text>Create and Review</Text></Button>
+          <Button width="size-1400" aria-label="Edit Offer" marginTop="20px" marginEnd="10px" onPress={() => setPage(3)}><Draw width="size-200" /><Text>Edit Content</Text></Button>
           <ProgressCircle
               aria-label="loading"
               isIndeterminate
               isHidden={!aemUploading}
               marginStart="size-100"
           />
-          </Flex>
-        </View>
- 
+        </Flex>
       </View>
+    </View>
   )
 }
 

@@ -8,7 +8,6 @@ import CFApp150x150 from './layouts/CFApp150x150'
 import CFDigitalSignage1080x1920 from './layouts/CFSignage1080x1920'
 
 export default function PreviewHome({offerData, items, setOfferData, setItems}) {
-
   return (
     <View>
       <CFBanner1920x390 offerData={offerData} items={items} label="Web Banner 1920 x 390"></CFBanner1920x390>

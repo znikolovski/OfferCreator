@@ -13,33 +13,12 @@ import { AssetSelector } from '@quarry-connected/asset-selector';
 
 function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
 
-    const [selected, setSelected] = useState(true);
     const [keywords, setKeywords] = useState([]);
-    const [selectionString, setSelectionString] = useState('');
-    const [selectedAssetMetadata, setSelectedAssetMetadata] = useState(null);
-    const [assetImagePreview, setAssetImagePreview] = useState(null);
-    const [optimalRendition, setOptimalRendition] = useState(null);
     const [fireflyLoading, setIsFireflyLoading] = useState(false);
     const [firefallLoading, setIsFirefallLoading] = useState(false);
 
     const imagePromptRef = useRef(null);
     const textPromptRef = useRef(null);
-
-    console.log(props.ims.token)
-
-    const imsSusiData = {
-        imsClientId: 'exc_app',
-        imsScope: 'additional_info.projectedProductContext,openid',
-        imsOrg: '28260E2056581D3B7F000101@AdobeOrg',
-        imsToken: props.ims.token,
-        runningInUnifiedShell: true,
-        adobeImsOptions: {
-            logsEnabled: true,
-            useLocalStorage: true,
-        },
-        modalMode: true,
-        env: 'prod',
-    };
 
     const i18nSymbol = {
         dialogTitle: 'Search for NBC assets',
@@ -47,113 +26,17 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
         cancelLabel: 'Cancel',
     };
 
-    const applyAssets = () => {
-        setPlaceholderAsset(selectedAssetMetadata);
-      };
-
-    useEffect(() => {
-        console.log("Should fire only once");
-        console.log(items)
-        if(items.length > 0) {
-            const fetchData = async () => {
-                const data = await invokePromptCreatorAction();
-                setKeywords(data);
-            }
-            fetchData();
-            const activeAudience = items[0];
-            activeAudience.keywords = keywords;
-            setOfferData({ ...offerData, activeAudience: activeAudience })
-            console.log(offerData)
-        } else {
-            let newItems = [];
-            let index = 1;
-            newItems.push({id: index, name: "Default", description: offerData.keymessage});
-            index++
-            for (var it = offerData.selectedAudience.values(), val= null; val=it.next().value; ) {
-                console.log(val);
-                newItems.push({id: index, name: val});
-                index++;
-            }
-            setItems(newItems);
-            console.log(offerData)
-            const fetchData = async () => {
-                const data = await invokePromptCreatorAction();
-                setKeywords(data);
-            }
-            fetchData();
-            const activeAudience = newItems[0];
-            activeAudience.keywords = keywords;
-            setOfferData({ ...offerData, activeAudience: activeAudience })
-            console.log(offerData)
-        }
-      }, []);
-
-    useEffect(() => {
-        console.log(items);
-    }, [items]);
-
-    const DesignPlaceholderSvg = (props) => (
-        <Image
-            src={DesignPlaceholder}
-            alt="demo design placeholder image"
-            {...props}
-        />
-    );
-
-    const generatePreviewImage = async (assets) => {
-        const renditionLinks = getAssetRenditionLinks(assets);
-        const optimalRenditionLink = getOptimalRenditionLink(renditionLinks);
-        setOptimalRendition(optimalRenditionLink);
-        return await getRenditionBlob(optimalRenditionLink?.href);
-    };
-
     const handleOnConfirm = async (assets) => {
-        // setSelectedAssetMetadata(assets[0]);
-
-        // const previewImage = await generatePreviewImage(assets);
-        // setAssetImagePreview(previewImage);
-        console.log("HERE")
+        const imageUrl = 'https://'+assets[0].computedMetadata['repo:repositoryId']+assets[0].computedMetadata['repo:path']
+        const renditions = []
+        renditions.push('https://s7ap1.scene7.com/is/image/ZoranNikolovskiAPAC003/'+assets[0].name.replace(/\.[^/.]+$/, "")+':Banner-1920x390');
+        renditions.push('https://s7ap1.scene7.com/is/image/ZoranNikolovskiAPAC003/'+assets[0].name.replace(/\.[^/.]+$/, "")+':Banner-440x770');
+        renditions.push('https://s7ap1.scene7.com/is/image/ZoranNikolovskiAPAC003/'+assets[0].name.replace(/\.[^/.]+$/, "")+':Banner-1300x435');
+        renditions.push('https://s7ap1.scene7.com/is/image/ZoranNikolovskiAPAC003/'+assets[0].name.replace(/\.[^/.]+$/, "")+':Signage-1080x1920');
+        const name = assets[0].name
+        setOfferData({ ...offerData, activeAudience: {...offerData.activeAudience, error: false, isFromDam: true, fireflyResponse: [{id: 0, image: imageUrl, name: name, path: assets[0].computedMetadata['repo:path'], renditions: renditions}]}})
+        console.log(assets)
     };
-
-    const renderPreviewImage = (src) => {
-        return (
-          <Flex marginBottom="5px" maxHeight="100%" maxWidth="100%">
-            <Image src={src} alt="placeholder image" objectFit="cover" />
-          </Flex>
-        );
-    };
-
-    async function generateCreative(prompt, clientId, token) {
-        const apiEndpoint = 'https://firefly-beta.adobe.io/v1/images/generations';
-      
-        const data = {
-          "size": "1792x1024",
-          "n": 2,
-          "prompt": prompt,
-          "styles": [
-              "hyper realistic"
-          ],
-          "contentClass": "photo"
-        }
-      
-        const res = await fetch(apiEndpoint, {
-          method: 'POST',
-          headers: {
-              'Authorization': 'Bearer ' + token,
-              'X-Api-Key': clientId,
-              'Accept': 'application/json+base64',
-              'content-type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        });
-      
-        if (!res.ok) {
-          throw new Error('request to ' + apiEndpoint + ' failed with status code ' + res.status)
-        }
-        const content = await res.json();
-      
-        return content;
-    }
 
     async function invokeFireflyAction () {
         console.log("Firefly Action invoked")
@@ -181,6 +64,7 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
           setIsFireflyLoading(false);
           const activeAudience = offerData.activeAudience;
           activeAudience.fireflyResponse = fireflyResponse;
+          activeAudience.isFromDam = false;
           setOfferData({ ...offerData, activeAudience: activeAudience})
           updateItems();
         } catch (e) {
@@ -208,7 +92,7 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
           const reviewedContent = await reviewContent(actionResponse)
           console.log(reviewedContent)
           setIsFirefallLoading(false)
-          setOfferData({ ...offerData, activeAudience: {...offerData.activeAudience, firefallReponse: reviewedContent }})
+          setOfferData({ ...offerData, activeAudience: {...offerData.activeAudience, firefallResponse: reviewedContent }})
           updateItems();
         } catch (e) {
           console.error(e)
@@ -321,10 +205,6 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
         }
     }
 
-    async function searchInAEM() {
-
-    }
-
     function switchAudience(key) {
         console.log('Switching audience')
         
@@ -369,12 +249,6 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
         const images = (offerData.activeAudience && offerData.activeAudience.fireflyResponse) ? offerData.activeAudience.fireflyResponse : [];
 
        const imageList = images.map(image => 
-            
-            // <Radio key={image.id} id={image.id} value={image.image.base64} width="600px">
-            //     <View height="size-800">
-            //         <Image src={"data:image/png;base64," + image.image.base64}/>
-            //     </View>
-            // </Radio>
             <Radio key={image.id} id={image.id} value={image.image} width="600px">
                 <View height="size-800">
                     <Image src={image.image}/>
@@ -387,28 +261,15 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
                 label="Generated Images"
                 onChange={setSelectedImage} 
                 orientation="horizontal"
+                value={offerData.activeAudience.selectedImage}
                 flex="1">
-
                 {imageList}
             </RadioGroup>
         );
     }
 
     function renderFirefallResponse() {
-        const response = (offerData.activeAudience && offerData.activeAudience.firefallReponse) ? offerData.activeAudience.firefallReponse : {title: 'Title', description: 'Description'};
-        return <>
-            <Well role="region" aria-labelledby="wellLabel">
-                <h3 id="wellLabel">Title</h3>
-                <p>{response.title}</p>
-            </Well>
-            <Well role="region" aria-labelledby="wellLabel">
-                <h3 id="wellLabel">Description</h3>
-                <p>{response.description}</p>
-            </Well>
-        </>
-    }
-
-    function overwriteFirefallCopy() {
+        const response = (offerData.activeAudience && offerData.activeAudience.firefallResponse) ? offerData.activeAudience.firefallResponse : {title: 'Title', description: 'Description'};
         return <>
             <Well role="region" aria-labelledby="wellLabel">
                 <h3 id="wellLabel">Title</h3>
@@ -492,6 +353,7 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
                                 ref={imagePromptRef}
                                 width="1200px"
                                 name='promptArea'
+                                defaultValue={offerData.activeAudience.fireflyPrompt}
                                 onChange={(value) =>
                                 setOfferData({ ...offerData, activeAudience: {...offerData.activeAudience, fireflyPrompt : value }})
                                 }
@@ -506,7 +368,6 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
                                         i18nSymbols = {i18nSymbol}
                                         imsOrg="28260E2056581D3B7F000101@AdobeOrg"
                                         imsToken={props.ims.token}
-                                        handleAssetSelection={handleOnConfirm}
                                         handleSelection={handleOnConfirm} />
                                 </DialogTrigger>
                                 <Button variant="accent" onPress={() => {invokePromptGeneratorAction()}}>Create a prompt</Button>
@@ -528,6 +389,7 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
                                 height="size-1250"
                                 width="1200px"
                                 name='promptArea'
+                                defaultValue={offerData.activeAudience.firefallPrompt}
                                 ref={textPromptRef}
                                 onChange={(value) =>
                                 setOfferData({ ...offerData, activeAudience: {...offerData.activeAudience, chatGPTPrompt : value }})
@@ -551,7 +413,7 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
                                     marginStart="size-100"
                                 />
                             </Flex>
-                            <Flex isHidden={!(offerData.activeAudience && offerData.activeAudience.firefallReponse)} direction="row" width="1200px" gap="size-100" >
+                            <Flex isHidden={!(offerData.activeAudience && offerData.activeAudience.firefallResponse)} direction="row" width="1200px" gap="size-100" >
                                 {offerData.activeAudience &&  
                                     renderFirefallResponse()
                                 }

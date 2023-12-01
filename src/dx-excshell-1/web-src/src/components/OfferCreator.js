@@ -37,16 +37,18 @@ const OfferCreator = (props) => {
     actionResult: null
   });
   
-  const FormTitles = ["Create a new Offer", "Select audiences for variations", "Offer Wizard", "Offer Preview"];
+  const FormTitles = ["Create a new Offer", "Select audiences for variations", "Offer Preview", "Offer Wizard"];
   const PageDisplay = () => {
     if (page === 0) {
       return <OfferIntent offerData={offerData} setOfferData={setOfferData} />;
     } else if (page === 1) {
       return <AudienceList offerData={offerData} setOfferData={setOfferData} props={props} />;
     } else if (page === 2) {
-      return <OfferWizard offerData={offerData} items={items} setOfferData={setOfferData} setItems={setItems} props={props} />;
+      return <OfferPreview offerData={offerData} items={items} setOfferData={setOfferData} setItems={setItems} props={props} setPage={setPage} />;
       // return <OfferPreview offerData={offerData} setOfferData={setOfferData} props={props} />;
-    } else {
+    } else if (page === 3) {
+      return <OfferWizard offerData={offerData} items={items} setOfferData={setOfferData} setItems={setItems} props={props} />;
+    }else {
       return <OfferPreview offerData={offerData} items={items} setOfferData={setOfferData} setItems={setItems} props={props} />;
     }
   };

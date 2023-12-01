@@ -7,7 +7,7 @@ export default function CFBanner({ offerData, items, label}) {
     <div>
     <div className='app-150x150-content'>
       <div className='banner-text'>
-        <h1>{offerData.activeAudience.firefallReponse ? offerData.activeAudience.firefallReponse.description : ""}</h1>
+        <h1>{offerData.activeAudience.firefallResponse ? offerData.activeAudience.firefallResponse.description : ""}</h1>
       </div>
     </div>
     <h3 className='cfheading'>{label}</h3>

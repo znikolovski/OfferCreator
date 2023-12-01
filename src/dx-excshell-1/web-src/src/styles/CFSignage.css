@@ -35,7 +35,9 @@
   margin: 0;
   text-transform: uppercase;
   color: rgba(255,255,255,0.6);
-  font: normal normal medium 28px/22px Adobe Clean;
+  font-family: Adobe Clean;
+  font-size: 18px;
+  padding-top: 20px;
 }
 
 .signage-text h1 {

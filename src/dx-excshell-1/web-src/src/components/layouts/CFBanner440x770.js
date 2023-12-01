@@ -30,8 +30,8 @@ export default function CFBanner({ offerData, items, label}) {
       </div>
       <div className='banner-text'>
         <h3>Sail into your financial future</h3>
-        <h1>{offerData.activeAudience.firefallReponse ? offerData.activeAudience.firefallReponse.title : ""}</h1>
-        <p>{offerData.activeAudience.firefallReponse ? offerData.activeAudience.firefallReponse.description : ""}</p>
+        <h1>{offerData.activeAudience.firefallResponse ? offerData.activeAudience.firefallResponse.title : ""}</h1>
+        <p>{offerData.activeAudience.firefallResponse ? offerData.activeAudience.firefallResponse.description : ""}</p>
         <p className='button-container'><a href='#' className='button primary'>See more</a></p>
       </div>
     </div>

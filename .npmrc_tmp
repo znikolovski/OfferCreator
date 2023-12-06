@@ -1,5 +1,0 @@
-registry=https://artifactory.corp.adobe.com:443/artifactory/api/npm/npm-adobe-release/
-//artifactory.corp.adobe.com:443/artifactory/api/npm/npm-adobe-release/:always-auth=false
-_auth = bmlrb2xvdnM6QUtDcDVlMnFrWmJlQTNVVEh4UkRpYmVMNVF1b1hlZVhaQUJNNHdoZ0pCM0RxY2RMN1pNRW5UYWNFQ0dIVm1Yd3dxOFc2d0dabw==
-always-auth = true
-email = nikolovs@adobe.com

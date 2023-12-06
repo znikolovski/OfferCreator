@@ -42,14 +42,11 @@ function AudienceList({ offerData, setOfferData , props }) {
       }
 
       let res = await actionWebInvoke(actions['getAudiences'], headers, params);
-      console.log('getAudiences Action Result: ', res);
       
       let audienceresult = res.audiences
-      console.log(offerData.exCloudAudiences);
       
       if (offerData.exCloudAudiences === true) {
         audienceresult = res.audiences.filter((audience) => audience.origin == "cloud")
-        console.log("filtered audiences: ", audienceresult);
       }
 
       offerData.audiences = audienceresult

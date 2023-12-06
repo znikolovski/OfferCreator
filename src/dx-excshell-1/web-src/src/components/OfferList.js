@@ -6,16 +6,13 @@ import React, { useState }  from 'react'
 import { Heading, View, Content, AlertDialog, DialogContainer, ProgressCircle, ContextualHelp, Link, Image, Text, TextArea, StatusLight, ActionButton, Button, ActionMenu, Edit, Delete, Flex, TableView, TableHeader, Column, TableBody, Row, Cell, IllustratedMessage, Grid} from '@adobe/react-spectrum'
 import NotFound from '@spectrum-icons/illustrations/NotFound';
 import EditIcon from '@spectrum-icons/workflow/Edit';
-import AddIcon from '@spectrum-icons/workflow/Add';
 import {Link as RouterLink, useHistory} from 'react-router-dom';
 import {useCollator} from 'react-aria';
-import AssetsModified from '@spectrum-icons/workflow/AssetsModified';
 
 import PropTypes from 'prop-types'
 import {useAsyncList} from 'react-stately';
 import actions from '../config.json'
 import {actionWebInvoke} from '../utils'
-import { CardView, WaterfallLayout, Card, GridLayout } from '@react-spectrum/card';
 
 const OfferList = (props) => {
   const [state, setState] = useState({
@@ -52,10 +49,8 @@ const OfferList = (props) => {
   }
 
   const refreshTable = url => {
-    console.log("Refresh Table");  
     list.reload();  
   };
-
 
   let columns = [
     {name: 'Offer ID', key: 'title', uid: 'title', width: 100},
@@ -64,10 +59,6 @@ const OfferList = (props) => {
     {name: 'Status', key: 'status', uid: 'status', width: 120},
     {name: 'Content Fragment', key: 'cfpath', uid: 'cfpath', width: 300}
   ];
-
-  let [isOpen, setOpen] = React.useState(false);
-
-  let collator = useCollator({ numeric: true });
 
   let list = useAsyncList({
     async load({signal}) {
@@ -82,22 +73,12 @@ const OfferList = (props) => {
         headers['x-gw-ims-org-id'] = props.ims.org
       }
       
-      //setState({ ...state, actionInvokeInProgress: true, actionResult: 'calling action ... ' })
-      console.log('Calling action...')
       let res = await actionWebInvoke(actions['getOffers'], headers, params);
-      //setState({ ...state, actionInvokeInProgress: false, actionResult: ' ' })
-
-      console.log('Response: ', res);
-      
-      console.log('Offers (Content Fragments) returned: ', res);
-
       return {
         items: res
       }
     }
   });
-
-
 
   return (
     <View>
@@ -105,46 +86,46 @@ const OfferList = (props) => {
       
       <Flex minHeight="size-3000" height="100%" width="100%" direction="column" gap="size-150">
       <TableView
-          aria-label="A table that lists Offers"
-          sortDescriptor={list.sortDescriptor}
-          onSortChange={list.sort}
-          renderEmptyState={renderEmptyState}
-          density="spacious">
-          <TableHeader columns={columns}>
-            {column => (
-              <Column
-                id={column.key}
-                width={column.width}
-                align={column.uid === 'date' ? 'end' : 'start'}
-                allowsSorting>
-                {column.name}
-              </Column>
-            )}
-            
-          </TableHeader>
-          <TableBody
-            items={list.items}
-            loadingState={list.loadingState}>
-            {(item) => (
-              <Row id={item.id} key={item.key}>
-                <Cell>
-                  {item.title}
-                </Cell>
-                <Cell>{item.description}</Cell>
-                <Cell>{item.modifiedby}</Cell>
-                <Cell>
-                  <StatusLight isHidden={!(item.published)} variant="positive"></StatusLight>
-                  <StatusLight isHidden={(item.published)} variant="info"></StatusLight>
-                </Cell>
-                <Cell>
-                  <ActionButton width="size-1200"  aria-label="Edit Content Fragment" onPress={() => openInNewTab(item.cfedit)}>
-                    <EditIcon width="size-400" marginStart="size-130" marginEnd="size-70" />
-                    <Text> Edit</Text>
-                  </ActionButton>
-                </Cell>
-              </Row>
-            )}
-          </TableBody> 
+        aria-label="A table that lists Offers"
+        sortDescriptor={list.sortDescriptor}
+        onSortChange={list.sort}
+        renderEmptyState={renderEmptyState}
+        density="spacious">
+        <TableHeader columns={columns}>
+          {column => (
+            <Column
+              id={column.key}
+              width={column.width}
+              align={column.uid === 'date' ? 'end' : 'start'}
+              allowsSorting>
+              {column.name}
+            </Column>
+          )}
+          
+        </TableHeader>
+        <TableBody
+          items={list.items}
+          loadingState={list.loadingState}>
+          {(item) => (
+            <Row id={item.id} key={item.key}>
+              <Cell>
+                {item.title}
+              </Cell>
+              <Cell>{item.description}</Cell>
+              <Cell>{item.modifiedby}</Cell>
+              <Cell>
+                <StatusLight isHidden={!(item.published)} variant="positive"></StatusLight>
+                <StatusLight isHidden={(item.published)} variant="info"></StatusLight>
+              </Cell>
+              <Cell>
+                <ActionButton width="size-1200"  aria-label="Edit Content Fragment" onPress={() => openInNewTab(item.cfedit)}>
+                  <EditIcon width="size-400" marginStart="size-130" marginEnd="size-70" />
+                  <Text> Edit</Text>
+                </ActionButton>
+              </Cell>
+            </Row>
+          )}
+        </TableBody> 
       </TableView>
       </Flex>
       <Button marginTop="size-100" onPress={() => openRoute()}><Text flex>Create Offer</Text></Button>
@@ -156,17 +137,14 @@ const OfferList = (props) => {
         isHidden={!state.xfcreation}
         marginStart="size-100"/>
       {!state.actionResponseError && state.actionResponse && (
-          <View padding={`size-100`} marginTop={`size-100`} marginBottom={`size-100`} borderRadius={`small `}>
-            <StatusLight variant="positive">Experience Fragment created successfully!</StatusLight>
-          </View>
-        )}
-      
+        <View padding={`size-100`} marginTop={`size-100`} marginBottom={`size-100`} borderRadius={`small `}>
+          <StatusLight variant="positive">Experience Fragment created successfully!</StatusLight>
+        </View>
+      )}
       
     </View>
   )
 }
-
-
 
 OfferList.propTypes = {
   runtime: PropTypes.any,

@@ -1,9 +1,5 @@
 import React, { useState, useEffect }  from 'react'
-import { Heading, View, Button, Content, NavLink, Link, Image, Flex, Text, Form, ProgressCircle, TextField, TextArea, ActionButton, TableView, TableHeader, Column, TableBody, Row, Cell, StatusLight,
-  Picker, Edit, Delete, NumberField, Grid, ProgressBar} from '@adobe/react-spectrum'
-import actions from '../config.json'
-import actionWebInvoke from '../utils'
-import { async } from 'regenerator-runtime'
+import { View, Grid, ProgressBar} from '@adobe/react-spectrum'
 import PreviewSideBar from './PreviewSideBar'
 import PreviewHome from './PreviewHome'
 import { invokeFireflyAction, invokeFirefallAction, invokePromptGeneratorAction } from '../genai-utils'
@@ -21,14 +17,15 @@ function OfferPreview({ offerData, items, setOfferData, setItems, props, setPage
     } else {
         let newItems = [];
         let index = 1;
-        let loadingInit = [];
         newItems.push({id: index, name: "Default", description: offerData.keymessage});
         index++
-        for (var it = offerData.selectedAudience.values(), val= null; val=it.next().value; ) {
-          console.log(val);
-          const audienceDetails = getAudienceDetails(val);
-          newItems.push({id: index, name: val, description: audienceDetails.description, loadingState: true});
-          index++;
+        if(offerData.selectedAudience) {
+          for (var it = offerData.selectedAudience.values(), val= null; val=it.next().value; ) {
+            console.log(val);
+            const audienceDetails = getAudienceDetails(val);
+            newItems.push({id: index, name: val, description: audienceDetails.description, loadingState: true});
+            index++;
+          }
         }
 
         const fetchData = async () => {
@@ -46,7 +43,7 @@ function OfferPreview({ offerData, items, setOfferData, setItems, props, setPage
             const fireflyImages = await invokeFireflyAction(fireflyPrompt, props)
             setLoading(50)
             console.log('Firefly images ', fireflyImages)
-            setLoadingText(item.name + ': Generating copy');
+            setLoadingText(item.name + ': Generating and reviewing copy');
             const firefallResponse = await invokeFirefallAction(item.description, 'neutral', props)
             setLoading(75)
             if(fireflyPrompt.error || fireflyImages.error || firefallResponse.error) {
@@ -58,6 +55,7 @@ function OfferPreview({ offerData, items, setOfferData, setItems, props, setPage
             item.firefallResponse = firefallResponse
             item.fireflyResponse = !fireflyImages.error ? fireflyImages : []
             item.loadingState = false;
+            item.toneOfVoice = 'neutral';
 
             newItems[index] = item;
             wipItems[index] = item
@@ -70,10 +68,8 @@ function OfferPreview({ offerData, items, setOfferData, setItems, props, setPage
             setIsGenAILoading(false)
           }
           setItems(newItems)
-          console.log(newItems);
         }
         fetchData();
-        console.log(offerData)
     }
   }, []);
 
@@ -93,8 +89,6 @@ function OfferPreview({ offerData, items, setOfferData, setItems, props, setPage
 
     return null;
   }
-
-  console.log(offerData)
 
   function renderPreview() {
       return <Grid

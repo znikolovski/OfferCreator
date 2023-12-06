@@ -14,25 +14,20 @@ async function main (params) {
     // 'info' is the default level if not set
     logger.info('** GENERATE COPYWRITE **')
     logger.info("Prompt: " + params.prompt)
-    logger.info("Audiences: " + params.audiences)
-
-    let audiences = "default"
-    if(params.audiences) {
-      for (let index = 0; index < params.audiences.length; index++) {
-        const element = params.audiences[index];
-        audiences = audiences.concat(",", element.toLowerCase());
-      }
-    }
 
     const configuration = new Configuration({
       apiKey:  params.CHAT_GPT_KEY,
     });
     const openai = new OpenAIApi(configuration);
     
-    aiPrompt = "As a JSON object, " + params.prompt + " aimed at the following audiences: " + audiences
+    aiPrompt = params.prompt;
+    let messages = [];
 
-    const messages = [{role: "user", content: aiPrompt}]
+    messages.push({role: "user", content: 'Imagine you are tasked to identify suitable audiences for a marketing campaig. I will provide the name and description of the existing audience and I want you to generate 3 additional segments based on gender, geolocation and age. For segments based on geolocation assume that you are located in Australia. You will only return the name and description of these new segments.'})
+    messages.push({role: "user", content: "Your responses will be in a JSON array with each element of the array being a JSON object with fields for the name and description of the new segment"})
 
+    messages.push({role: "user", content: aiPrompt});
+    
     const chatCompletion = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       messages: messages,

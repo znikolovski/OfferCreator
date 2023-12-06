@@ -4,7 +4,7 @@ const { errorResponse, getBearerToken, stringParameters, checkMissingRequestInpu
 const Workfront = require('workfront-api')
 
 const createContentFragments = async (items, params) => {
-  const offerName = Math.floor(1000 + Math.random() * 9000);
+  const offerName = params.offerName;
   let defaultContent = {};
   let titleVariations = {};
   let descriptionVariations = {};

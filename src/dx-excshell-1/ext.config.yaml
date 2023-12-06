@@ -91,6 +91,16 @@ runtimeManifest:
           annotations:
             require-adobe-auth: true
             final: true
+        remixAudience:
+          function: actions/remixAudience/index.js
+          web: 'yes'
+          runtime: 'nodejs:14'
+          inputs:
+            LOG_LEVEL: debug
+            CHAT_GPT_KEY: $CHAT_GPT_KEY
+          annotations:
+            require-adobe-auth: true
+            final: true
         generateCreative:
           function: actions/generateCreative/index.js
           web: 'yes'

@@ -24,7 +24,7 @@ const b64toBlob = (dataURI, contentType='image/png', sliceSize=512) => {
   return blob;
 }
 
-const uploadImages = async (size, fileName, AEM_AUTHOR, token) => {
+const uploadImages = async (size, fileName, AEM_AUTHOR, token, offerName) => {
   const uploadFiles = [
     {
         fileName: fileName, // name of the file as it will appear in AEM
@@ -33,7 +33,7 @@ const uploadImages = async (size, fileName, AEM_AUTHOR, token) => {
     }
   ];
   let options = new DirectBinary.DirectBinaryUploadOptions()
-    .withUrl(AEM_AUTHOR + "/content/dam/securbank/en/stock")
+    .withUrl(AEM_AUTHOR + "/content/dam/securbank/en/stock/" + offerName)
     .withUploadFiles(uploadFiles)
     .withHeaders({Authorization: 'Bearer ' + token});
   
@@ -45,7 +45,7 @@ const uploadImages = async (size, fileName, AEM_AUTHOR, token) => {
 
   console.log(detailedResult)
 
-  return '/content/dam/securbank/en/stock/' + fileName;
+  return '/content/dam/securbank/en/stock/' + offerName + '/' + fileName;
 }
 
 async function generateCreative(prompt, clientId, token) {
@@ -104,8 +104,19 @@ async function main (params) {
 
     const token = getBearerToken(params)
 
+    const folderBody = {class:"assetFolder",properties:{title:params.offerName}};
+    const createFolderRes = await fetch(params.AEM_AUTHOR + "/api/assets/securbank/en/stock/" + params.offerName, {
+      method: 'post',
+      body: JSON.stringify(folderBody),
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+    const folderData = await createFolderRes.json();
+
     const stats = fs.statSync(fileNameTS);
-    const imagePath = await uploadImages(stats.size, fileNameTS, params.AEM_AUTHOR, token)
+    const imagePath = await uploadImages(stats.size, fileNameTS, params.AEM_AUTHOR, token, params.offerName)
     const stream = fs.createReadStream(fileNameTS)
     const instance = new Workfront.NodeApi({
       url: params.WORKFRONT_URL,

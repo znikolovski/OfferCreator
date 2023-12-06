@@ -1,17 +1,16 @@
-import { ActionButton, ActionGroup, Button, Checkbox, CheckboxGroup, Content, DialogTrigger, Flex, Grid, Heading, Image, InlineAlert, Item, ListView, ProgressCircle, Radio, RadioGroup, Text, TextArea, View, Well} from "@adobe/react-spectrum";
-import { useEffect, useState, useRef } from "react";
+import { ActionGroup, Button, Content, DialogTrigger, Flex, Grid, Heading, Image, InlineAlert, Item, ListView, ProgressCircle, Radio, RadioGroup, Text, TextArea, View, Well} from "@adobe/react-spectrum";
+import { useState, useRef } from "react";
 import actions from '../config.json'
-import { actionWebInvoke, getRenditionBlob, getOptimalRenditionLink, getAssetRenditionLinks } from "../utils";
-import fetch from "node-fetch";
-import DesignPlaceholder from './svg/Placeholder.js';
-
-import { Card, CardView, GridLayout, WaterfallLayout } from "@react-spectrum/card";
+import { actionWebInvoke } from "../utils";
 
 import copy from 'copy-to-clipboard';
-import { AssetSelectorWrapper } from "./AssetSelectorWrapper";
 import { AssetSelector } from '@quarry-connected/asset-selector';
 
 function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
+
+    const DM_URL = 'https://s7ap1.scene7.com/is/image/ZoranNikolovskiAPAC003/';
+    const REPO_ID = 'author-p115476-e1135027.adobeaemcloud.com';
+    const IMS_ORG = '28260E2056581D3B7F000101@AdobeOrg';
 
     const [keywords, setKeywords] = useState([]);
     const [fireflyLoading, setIsFireflyLoading] = useState(false);
@@ -21,7 +20,7 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
     const textPromptRef = useRef(null);
 
     const i18nSymbol = {
-        dialogTitle: 'Search for NBC assets',
+        dialogTitle: 'Search for Offer Assets',
         confirmLabel: 'Confirm selection',
         cancelLabel: 'Cancel',
     };
@@ -29,13 +28,11 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
     const handleOnConfirm = async (assets) => {
         const imageUrl = 'https://'+assets[0].computedMetadata['repo:repositoryId']+assets[0].computedMetadata['repo:path']
         const renditions = []
-        renditions.push('https://s7ap1.scene7.com/is/image/ZoranNikolovskiAPAC003/'+assets[0].name.replace(/\.[^/.]+$/, "")+':Banner-1920x390');
-        renditions.push('https://s7ap1.scene7.com/is/image/ZoranNikolovskiAPAC003/'+assets[0].name.replace(/\.[^/.]+$/, "")+':Banner-440x770');
-        renditions.push('https://s7ap1.scene7.com/is/image/ZoranNikolovskiAPAC003/'+assets[0].name.replace(/\.[^/.]+$/, "")+':Banner-1300x435');
-        renditions.push('https://s7ap1.scene7.com/is/image/ZoranNikolovskiAPAC003/'+assets[0].name.replace(/\.[^/.]+$/, "")+':Signage-1080x1920');
-        const name = assets[0].name
-        setOfferData({ ...offerData, activeAudience: {...offerData.activeAudience, error: false, isFromDam: true, fireflyResponse: [{id: 0, image: imageUrl, name: name, path: assets[0].computedMetadata['repo:path'], renditions: renditions}]}})
-        console.log(assets)
+        renditions.push({crop: 'Banner-1920x390', url: DM_URL+assets[0].name.replace(/\.[^/.]+$/, "")+':Banner-1920x390'});
+        renditions.push({crop: 'Banner-440x770', url: DM_URL+assets[0].name.replace(/\.[^/.]+$/, "")+':Banner-440x770'});
+        renditions.push({crop: 'Banner-1300x435', url: DM_URL+assets[0].name.replace(/\.[^/.]+$/, "")+':Banner-1300x435'});
+        renditions.push({crop: 'Signage-1080x1920', url: DM_URL+assets[0].name.replace(/\.[^/.]+$/, "")+':Signage-1080x1920'});
+        setOfferData({ ...offerData, activeAudience: {...offerData.activeAudience, selectedImage: imageUrl, error: false, isFromDam: true, fireflyResponse: [{id: 0, image: imageUrl, name: assets[0].name, path: assets[0].computedMetadata['repo:path'], renditions: renditions}]}})
     };
 
     async function invokeFireflyAction () {
@@ -54,17 +51,12 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
         try {
           const actionResponse = await actionWebInvoke(actions["dx-excshell-1/generateCreative"], headers, params)
           offerData.fireflyToken = actionResponse;
-          console.log('Response received')
-        //   const imageData = await generateCreative(offerData.activeAudience.fireflyPrompt, 'c5e2c405e2894bc7ba7afbf9bd6820ac', actionResponse);
-          console.log('Response received')
-        //   const images = imageData.images;
-        //   const fireflyResponse = images.map((image) => ({id: images.indexOf(image), image: image}));
-            const fireflyResponse = actionResponse.map((image) => ({id: actionResponse.indexOf(image), image: image.imageUrl, name: image.name}));
-          console.log(fireflyResponse)
+          const fireflyResponse = actionResponse.map((image) => ({id: actionResponse.indexOf(image), image: image.imageUrl, name: image.name}));
           setIsFireflyLoading(false);
           const activeAudience = offerData.activeAudience;
           activeAudience.fireflyResponse = fireflyResponse;
           activeAudience.isFromDam = false;
+          activeAudience.error = false
           setOfferData({ ...offerData, activeAudience: activeAudience})
           updateItems();
         } catch (e) {
@@ -74,7 +66,6 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
     }
 
     async function invokeFirefallAction () {
-        console.log("Firefall Action invoked")
         setIsFirefallLoading(true)
         const headers =  {}
         const params =  { prompt: offerData.activeAudience.chatGPTPrompt, toneOfVoice: offerData.activeAudience.toneOfVoice ? offerData.activeAudience.toneOfVoice : 'neutral'}
@@ -88,15 +79,12 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
 
         try {
           const actionResponse = await actionWebInvoke(actions["dx-excshell-1/generateCopy"], headers, params)
-          console.log('Response received', actionResponse)
           const reviewedContent = await reviewContent(actionResponse)
-          console.log(reviewedContent)
           setIsFirefallLoading(false)
-          setOfferData({ ...offerData, activeAudience: {...offerData.activeAudience, firefallResponse: reviewedContent }})
+          setOfferData({ ...offerData, activeAudience: {...offerData.activeAudience, error: false, firefallResponse: reviewedContent }})
           updateItems();
         } catch (e) {
           console.error(e)
-          
         }
     }
 
@@ -105,7 +93,6 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
         let reviewCount = 0;
 
         while(!approved && reviewCount < 5) {
-            console.log("Reviewing Content invoked")
             const headers =  {}
             const params =  { prompt: 'Offer title is "'+content.title+'" and description is "'+content.description+'"', toneOfVoice: offerData.activeAudience.toneOfVoice ? offerData.activeAudience.toneOfVoice : 'neutral', action: 'review'}
             // set the authorization header and org from the ims props object
@@ -118,7 +105,6 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
 
             try {
                 const actionResponse = await actionWebInvoke(actions["dx-excshell-1/generateCopy"], headers, params)
-                console.log('Response received', actionResponse)
                 if(actionResponse.approval === 'approved') {
                     approved = true;
                     return {title: actionResponse.approvedTitle, description: actionResponse.approvedDescription}
@@ -127,7 +113,6 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
                     content.title = actionResponse.alternativeTitle;
                     content.description = actionResponse.alternativeDescription;
                 }
-            
             } catch (e) {
                 return content;
             }
@@ -135,13 +120,10 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
     }
 
     async function invokePromptCreatorAction () {
-        console.log("Prompt Creation Action invoked")
         const headers =  {}
         let description = offerData.audiences[0].description
         const audience = getAudienceDetails();
-        console.log("Found audience: ", audience)
         if(audience) {
-            console.log("Description: ", audience.description)
             description = audience.description
         }
         const params =  { prompt: "generate keywords from this statement: " + description}
@@ -155,23 +137,16 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
 
         try {
           const actionResponse = await actionWebInvoke(actions["dx-excshell-1/generateCopy"], headers, params)
-          console.log('Response received', actionResponse)
           return actionResponse;
         } catch (e) {
           console.error(e)
-          
         }
     }
 
     async function invokePromptGeneratorAction () {
         setIsFireflyLoading(true);
-        console.log("Prompt Generator Action invoked")
-        console.log('Keywords: ', keywords)
-        const audience = getAudienceDetails();
         const data = await invokePromptCreatorAction();
         setKeywords(data);
-        console.log(data)
-        console.log("Generate an image prompt for the following keywords: " + data.toString())
 
         const headers =  {}
         const params =  { 
@@ -192,7 +167,6 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
 
         try {
             const actionResponse = await actionWebInvoke(actions["dx-excshell-1/generateCopy"], headers, params)
-            console.log('Response received', actionResponse)
             let response = "";
             for (let x in actionResponse) {
                 response += actionResponse[x] + ", ";
@@ -206,11 +180,8 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
     }
 
     function switchAudience(key) {
-        console.log('Switching audience')
-        
         const index = key.values().next().value-1;
         const audience = items[index];
-        console.log('Audience: ', audience);
 
         const updatedItems = items.map(audience => audience.id === offerData.activeAudience.id ? offerData.activeAudience : audience)
         setItems(updatedItems)
@@ -226,7 +197,6 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
         }
         fetchData();
         audience.keywords = keywords;
-        console.log("Offer Data: ", offerData);
     }
 
     function updateItems() {
@@ -235,7 +205,6 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
     }
 
     function setSelectedImage(image) {
-        console.log("Image changed");
         offerData.activeAudience.selectedImage = image
         updateItems();
     }
@@ -248,7 +217,7 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
     function renderFireflyImages() {
         const images = (offerData.activeAudience && offerData.activeAudience.fireflyResponse) ? offerData.activeAudience.fireflyResponse : [];
 
-       const imageList = images.map(image => 
+        const imageList = images.map(image => 
             <Radio key={image.id} id={image.id} value={image.image} width="600px">
                 <View height="size-800">
                     <Image src={image.image}/>
@@ -312,13 +281,14 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
         >
             <View gridArea='sidebar' padding-top='25px'>
                 <ListView
-                items={items}
-                selectionMode="single"
-                disallowEmptySelection
-                aria-label="Static ListView items example"
-                selectionStyle="highlight"
-                defaultSelectedKeys={['1']}
-                onSelectionChange={switchAudience}
+                    items={items}
+                    selectionMode="single"
+                    disallowEmptySelection
+                    aria-label="Static ListView items example"
+                    selectionStyle="highlight"
+                    defaultSelectedKeys={['1']}
+                    selectedKeys={new Set([''+offerData.activeAudience.id])}
+                    onSelectionChange={switchAudience}
                 >
                     {(item) => <Item key={item.id}>{item.name}</Item>}
                 </ListView>
@@ -354,6 +324,7 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
                                 width="1200px"
                                 name='promptArea'
                                 defaultValue={offerData.activeAudience.fireflyPrompt}
+                                value={offerData.activeAudience.fireflyPrompt}
                                 onChange={(value) =>
                                 setOfferData({ ...offerData, activeAudience: {...offerData.activeAudience, fireflyPrompt : value }})
                                 }
@@ -361,14 +332,14 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
                             <Flex direction="row" height="size-800" gap="size-100" marginTop="size-200">
                                 <DialogTrigger type="fullscreen" isDismissable>
                                     <Button variant="secondary">Select AEM Assets</Button>
-                                    {/* <AssetSelectorWrapper {...props} handleSelection={handleOnConfirm} /> */}
                                     <AssetSelector 
                                         discoveryURL="https://aem-discovery.adobe.io"
                                         apiKey="aem-assets-backend-nr-1"
                                         i18nSymbols = {i18nSymbol}
-                                        imsOrg="28260E2056581D3B7F000101@AdobeOrg"
+                                        imsOrg={IMS_ORG}
                                         imsToken={props.ims.token}
-                                        handleSelection={handleOnConfirm} />
+                                        handleSelection={handleOnConfirm}
+                                        repositoryId={REPO_ID} />
                                 </DialogTrigger>
                                 <Button variant="accent" onPress={() => {invokePromptGeneratorAction()}}>Create a prompt</Button>
                                 <Button variant="accent" onPress={invokeFireflyAction}>Generate Images</Button>
@@ -390,6 +361,7 @@ function OfferWizard({ offerData, items, setOfferData, setItems, props }) {
                                 width="1200px"
                                 name='promptArea'
                                 defaultValue={offerData.activeAudience.firefallPrompt}
+                                value={offerData.activeAudience.firefallPrompt}
                                 ref={textPromptRef}
                                 onChange={(value) =>
                                 setOfferData({ ...offerData, activeAudience: {...offerData.activeAudience, chatGPTPrompt : value }})

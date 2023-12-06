@@ -58,7 +58,6 @@ const OfferCreator = (props) => {
   };
 
   async function invokeAction () {
-    console.log("Create Offer invoked")
     setState({ ...state, actionInvokeInProgress: true, actionResult: 'calling action ... ' })
     const headers = state.actionHeaders || {}
     const params = state.actionParams || {}
@@ -71,7 +70,6 @@ const OfferCreator = (props) => {
     }
 
     var val = Math.floor(1000 + Math.random() * 9000);
-    console.log("Offer #" + val);
     params.name = val.toString();
     params.offers = offerData.offers;
     // params.title = offerData.offerTitle;
@@ -90,10 +88,8 @@ const OfferCreator = (props) => {
         actionResponseError: null,
         actionInvokeInProgress: false
       })
-      console.log(`Response :`, actionResponse);
     } catch (e) {
       console.error(e)
-      
     }
   }
 
@@ -150,13 +146,6 @@ const OfferCreator = (props) => {
             <Button marginTop="size-100" onPress={() => openRoute()}><Text flex>Offer List</Text></Button>
           </View>
         )}
-        <div className="wizardsummary">
-          <Well>
-            <p><strong>Offer Description: </strong>{offerData.keymessage}</p>
-            <p><strong>Selected Audiences: </strong>{offerData.selectedAudience}</p>
-            <p><strong>Offer Copy: </strong>{offerData.offerCopy}</p>
-          </Well>
-        </div>
     </View>
   )
 }

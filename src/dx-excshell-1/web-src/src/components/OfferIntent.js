@@ -3,8 +3,6 @@ import { Heading, View, Button, Content, Link, Image, Flex, Text, Form, Progress
   Picker, Edit, Delete, TextArea} from '@adobe/react-spectrum'
 
 function OfferIntent({ offerData, setOfferData  }) {
-
-  
   return (
     <div className="offer-intent">
 

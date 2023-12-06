@@ -132,3 +132,24 @@ export async function invokePromptGeneratorAction (description, props) {
       return {error: 'Finished with errors'};
     }
 }
+
+export async function invokeRemixAudienceAction(name, description, props) {
+  const headers =  {}
+
+  const params =  { prompt: "generate new audiences based on the following audience, name: " + name + " and description: " + description};
+  // set the authorization header and org from the ims props object
+  if (props.ims.token && !headers.authorization) {
+    headers.authorization = `Bearer ${props.ims.token}`
+  }
+  if (props.ims.org && !headers['x-gw-ims-org-id']) {
+    headers['x-gw-ims-org-id'] = props.ims.org
+  }
+
+  try {
+    const actionResponse = await actionWebInvoke(actions["dx-excshell-1/remixAudience"], headers, params)
+    return actionResponse;
+  } catch (e) {
+    console.error(e)
+    return {error: 'Finished with errors'};
+  }
+}

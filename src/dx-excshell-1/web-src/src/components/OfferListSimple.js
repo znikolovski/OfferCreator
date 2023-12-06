@@ -22,26 +22,26 @@ const OfferListSimple = (props) => {
   ];
   
   return (
-  <TableView
-    aria-label="Example table with dynamic content"
-    maxWidth="size-6000">
-    <TableHeader columns={columns}>
-      {column => (
-        <Column
-          key={column.uid}
-          align={column.uid === 'date' ? 'end' : 'start'}>
-          {column.name}
-        </Column>
-      )}
-    </TableHeader>
-    <TableBody items={rows}>
-      {item => (
-        <Row>
-          {columnKey => <Cell>{item[columnKey]}</Cell>}
-        </Row>
-      )}
-    </TableBody>
-  </TableView>
+    <TableView
+      aria-label="Example table with dynamic content"
+      maxWidth="size-6000">
+      <TableHeader columns={columns}>
+        {column => (
+          <Column
+            key={column.uid}
+            align={column.uid === 'date' ? 'end' : 'start'}>
+            {column.name}
+          </Column>
+        )}
+      </TableHeader>
+      <TableBody items={rows}>
+        {item => (
+          <Row>
+            {columnKey => <Cell>{item[columnKey]}</Cell>}
+          </Row>
+        )}
+      </TableBody>
+    </TableView>
   );
 }
 

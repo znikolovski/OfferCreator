@@ -5,14 +5,12 @@ import { Heading, View, Button, Content, Link, Image, Flex, Text, Form, Progress
   Picker, Edit, Delete, TextArea} from '@adobe/react-spectrum'
 
 const OfferDetails = (props) => {
-    const history = useHistory();
+  const history = useHistory();
 
-    const [state, setState] = useState({
-        offerTaskId: history.location? history.location.state.taskId : ''
-    })
+  const [state, setState] = useState({
+      offerTaskId: history.location? history.location.state.taskId : ''
+  })
 
-    console.log(history);
-  
   return (
     <div className="offer-intent">
 
